@@ -1,1 +1,1 @@
-DELETE http://localhost:3001/api/persons/1
+DELETE https://ruby-dull-ostrich.cyclic.app/api/persons/1
