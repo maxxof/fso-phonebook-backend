@@ -12,9 +12,6 @@ app.use(cors())
 app.use(express.static('build'))
 
 morgan.token('body', (req, res) => {
-    if (JSON.stringify(req.body) === "{}") {
-        return ' '
-    }
     return JSON.stringify(req.body)
 })
 
@@ -52,10 +49,12 @@ app.get("/api/persons/:id", (req, res) => {
     }
 })
 
-app.delete("/api/persons/:id", (req, res) => {
-    const id = Number(req.params.id)
-    persons = persons.filter(person => person.id !== id)
-    res.status(204).end()
+app.delete("/api/persons/:id", (req, res, next) => {
+    Person.findByIdAndDelete(req.params.id)
+        .then(result => {
+            res.status(204).end()
+        })
+        .catch(err => next(err))
 })
 
 app.post('/api/persons', (req, res) => {
@@ -80,6 +79,18 @@ app.post('/api/persons', (req, res) => {
         res.json(savedPerson)
     })
 })
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+  
+    if (error.name === 'CastError') {
+      return response.status(400).send({ error: 'malformatted id' })
+    } 
+  
+    next(error)
+  }
+  
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
