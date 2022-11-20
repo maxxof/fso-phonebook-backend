@@ -19,11 +19,11 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 let persons = []
 
-const Info = () => {
+const Info = count => {
     const time = new Date()
     return (
         `<div>
-            <p>Phonebook has info for ${persons.length} people</p>
+            <p>Phonebook has info for ${count} people</p>
             <p>${time}</p>
         </div>`
     )
@@ -35,18 +35,22 @@ app.get("/api/persons", (req, res) => {
     })
 })
 
-app.get("/info", (req, res) => {
-    res.send(Info())
+app.get("/info", (req, res, next) => {
+    Person.find({}).then(persons => {
+        res.send((Info(persons.length)))
+    })
 })
 
-app.get("/api/persons/:id", (req, res) => {
-    const id = Number(req.params.id)
-    const person = persons.find(person => person.id === id)
-    if (person) {
-        res.json(person)
-    } else {
-        res.status(404).end()
-    }
+app.get("/api/persons/:id", (req, res, next) => {
+    Person.findById(req.params.id)
+        .then(person => {
+            if (persons) {
+                res.json(person)
+            } else {
+                res.status(404).end()
+            }
+        })
+        .catch(err => next(err))
 })
 
 app.delete("/api/persons/:id", (req, res, next) => {
