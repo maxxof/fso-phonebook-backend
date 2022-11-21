@@ -29,19 +29,19 @@ const Info = count => {
     )
 }
 
-app.get("/api/persons", (req, res) => {
+app.get('/api/persons', (req, res) => {
     Person.find({}).then(persons => {
         res.json(persons)
     })
 })
 
-app.get("/info", (req, res, next) => {
+app.get('/info', (req, res, next) => {
     Person.find({}).then(persons => {
         res.send((Info(persons.length)))
     })
 })
 
-app.get("/api/persons/:id", (req, res, next) => {
+app.get('/api/persons/:id', (req, res, next) => {
     Person.findById(req.params.id)
         .then(person => {
             if (persons) {
@@ -53,7 +53,7 @@ app.get("/api/persons/:id", (req, res, next) => {
         .catch(err => next(err))
 })
 
-app.delete("/api/persons/:id", (req, res, next) => {
+app.delete('/api/persons/:id', (req, res, next) => {
     Person.findByIdAndDelete(req.params.id)
         .then(result => {
             res.status(204).end()
@@ -93,7 +93,7 @@ const errorHandler = (error, request, response, next) => {
   
     if (error.name === 'CastError') {
       return response.status(400).send({ error: 'malformatted id' })
-    } else if(error.name === "ValidationError") {
+    } else if(error.name === 'ValidationError') {
         return response.status(400).json({ error: error.message })
     }
   
